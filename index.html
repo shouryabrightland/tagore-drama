@@ -294,6 +294,7 @@
     list.forEach((item, i) => {
 
         let audio = new Audio("./audio/" + item[1]);
+        audio.load();
         audio.ctx = new AudioContext();
         audio._source = audio.ctx.createMediaElementSource(audio);
         audio.mainVolume = item[4] || 1;
@@ -380,5 +381,6 @@
     })
 
 </script>
+
 
 </html>
