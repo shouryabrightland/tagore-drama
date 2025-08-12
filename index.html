@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>soundfx</title>
+</head>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+    }
+
+    .container,
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dec {
+        font-size: large;
+    }
+
+    .fx_btn {
+        width: 100px;
+        height: 100px;
+        background-color: green;
+        border-radius: 20px;
+    }
+
+    .back {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: large;
+        font-weight: bolder;
+        background-color: lightgreen;
+        border-radius: 10px;
+        margin: 10px;
+    }
+
+    .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+
+<body>
+    <div class="container">
+        <div class="btn">
+            <div class="back">&#60;</div>
+            <div class="fx_btn">
+            </div>
+        </div>
+        <div class="dec"></div>
+    </div>
+</body>
+<script>
+    const audios = [];
+    const Acts = [];
+    let Actindex = 0
+
+    const fxlist = [
+        {
+            start: [3],
+            stop: true,
+            title: "Macbeth start!!"
+        },
+        {
+            start: [1, 4, 10],
+            stop: [3],
+            title: "Witch ritual!"
+        },
+        {
+            start: [1],
+            stop: [],
+            title: "loud thunder (2 left)",
+        },
+        {
+            start: [7],
+            stop: [],
+            title: "little thunder (1 left)",
+        }, {
+            start: [1],
+            stop: [],
+            title: "loud thunder (0 left)",
+        },
+        {
+            start: [5],
+            stop: [1, 4],
+            title: "do u belive in them?"
+        },
+        {
+            start: [2, 12],
+            stop: [],
+            title: "bell"
+        },
+        {
+            start: [],
+            stop: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+            title: "act 2 start"
+        },
+        {
+            start: [8],
+            stop: [12],
+            title: "lady room"//5
+        },
+        {
+            start: [9],
+            stop: [],
+            title: "later that night"
+        },
+        {
+            start: [11],
+            stop: [8],
+            title: "king going to be killed"//7
+        },
+        {
+            start: [6, 3],
+            stop: [11],
+            title: "knife! khachaaak! hehehe!"//8
+        },
+        {
+            start: [],//8.1
+            stop: [9],
+            title: "next morning!!"
+        },
+        {
+            start: [13],//9
+            stop: true,
+            title: "next knife! for his friend"
+        },
+        {
+            start: [5, 8],
+            stop: [],
+            title: "party! yeameee..."//10
+        },
+        {
+            start: [14, 11],
+            stop: [5, 8],
+            title: "bhoot!"
+        },
+        {
+            start: [3],//12
+            stop: true,
+            title: "act 4 start"
+        },
+        {
+            start: [7, 11, 10],//13
+            stop: [3],
+            title: "Witch ritual!"
+        },
+        {
+            start: [7],//14
+            stop: [],
+            title: "little thunder"
+        },
+        {
+            start: [3],//15
+            stop: true,
+            title: "macdef ki family is no more...."
+        },
+        {
+            start: [11],//16
+            stop: true,
+            title: "got news.. his lady is no more "
+        },
+        {
+            start: [3],//17
+            stop: [11],
+            title: "i will take revenge Macbeth!!"
+        },
+        {
+            start: [15],//17
+            stop: [],
+            title: "war of end"
+        },
+        {
+            start: [],//18
+            stop: [15],
+            title: "mute sowrd.."
+        },
+        {
+            start: [12],//19
+            stop: true,
+            title: "let peace return to scotland!! [end!]"
+        },
+
+
+
+
+    ]
+    //adding -1 after bool will stop fade
+    const list = [
+        [1, "thunder.mp3", 1, 10, 1, false],
+        [2, "bell.mp3", 0, 4, 1, false],
+        [3, "Birnam Wood  The Tragedy of Macbeth (Soundtrack from the Apple Original Film).mp3", 10, 39, 1, true],
+        [4, "Dark Music - The Witch's Curse.mp3", 73, 93, 0.5, true],
+        [5, "fireplace-with-crackling-sounds-2-min-rk-178392.mp3", 0, 115, 1, true],
+        [6, "knife.mp3", 0],
+        [7, "loud-thunder-192165.mp3", 0, 4, 1, false],
+        [8, "murder-mystery-spooky-midsomer-orchestral-instrumental-theme-147009.mp3", 0, 160, 0.5, true],
+        [9, "night-ambience-17064 (1).mp3", 0, 120, 1, true],
+        [10, "rain-sound-188158.mp3", 4, 70, 0.4, true],
+        [11, "spooky-dark-pad-35258.mp3", 2, 33, 1, true],
+        [12, "happy.mp3", 31, 54, 0.7, true],
+        [13, "knife2.mp3", 1],
+        [14, "ghost.mp3", 0],
+        [15, "shod.mp3", 3, 76, 1, true]
+    ]
+    const getAudioList = (ActNo) => {
+        const au = []
+        for (let i = 0; i < list.length; i++) {
+            au.push(false)
+        }
+        for (let i = 0; i < ActNo + 1; i++) {
+            const fx = fxlist[i];
+            console.log("getting fx", fx)
+            if (typeof (fx.stop) == "boolean" && fx.stop) {
+                au.fill(false);
+            } else {
+                [...fx.stop].forEach((aud) => {
+                    au[aud - 1] = false;
+                })
+            }
+            fx.start.forEach((audioNo) => {
+                au[audioNo - 1] = true
+            })
+        }
+        const fx = {
+            start: [],
+            stop: [],
+            title: fxlist[ActNo].title
+        }
+        au.forEach((item, index) => {
+            if (item) {
+                fx.start.push(index + 1)
+            } else {
+                fx.stop.push(index + 1)
+            }
+        })
+        console.log(ActNo, fx, au)
+        return fx
+
+    }
+    const functionForfx = (act_) => {
+        return (() => {//fxlist obj
+            const act = act_;
+            if (typeof (act.stop) == "boolean" && act.stop) {
+                audios.forEach(item => {
+                    if (isPlaying(item)) fadeOut(item)
+                })
+            } else {
+                [...act.stop].forEach((aud) => {
+                    fadeOut(audios[aud - 1]);
+                })
+            }
+            [...act.start].forEach((aud) => {
+                let audio = audios[aud - 1];
+                if (isPlaying(audio)) {
+                    audio.pause();
+                    audio.play();
+                } else {
+                    fadeIn(audio);
+                }
+            });
+        }
+        )
+    };
+    // for (let i = 0; i < list.length; i++) {
+    //     const item = list[i];
+    //     min = Math.min(item[0],min)
+    // }
+    const onclickhandle = (hardcheck) => {
+        if (hardcheck == true) {
+            const fx = getAudioList(Actindex);
+            functionForfx(fx)()
+        } else {
+            Acts[Actindex = Math.max(Actindex, 0)]()
+        }
+        dec.innerText = "current:" + (fxlist[Actindex].title || "nothing");
+        dec.innerText += "\nnext: " + (fxlist[Actindex + 1].title || "nothing")
+        Actindex++;
+
+    }
+
+    list.forEach((item, i) => {
+
+        let audio = new Audio("./audio/" + item[1]);
+        audio.ctx = new AudioContext();
+        audio._source = audio.ctx.createMediaElementSource(audio);
+        audio.mainVolume = item[4] || 1;
+        if (!audio.fading) audio.volume = audio.mainVolume;
+        audio.currentTime = item[2] || 0;
+        if (item[6] && item[6] == -1) audio.nofade = true
+        audio.onplay = () => {
+            if (item[3]) {
+                console.log("duration = " + (item[3] - audio.currentTime) + "s")
+                if (audio.timeout) clearTimeout(audio.timeout)
+                audio.timeout = setTimeout(() => {
+                    if (audio.loop) {
+                        audio.currentTime = item[2] || 0;
+                        console.log("time changed!!!")
+                        audio.play()
+                        audio.onplay()
+                    } else {
+                        fadeOut(audio);
+                    }
+                }, 1000 * (item[3] - audio.currentTime))
+            }
+            audio.loop = item[5] || false;
+            console.log("playing " + item[1] + " with volume " + audio.volume + " and loop is " + audio.loop + " from " + audio.currentTime);
+        }
+        audio.onpause = () => {
+            console.log("paused " + item[1]);
+            audio.mainVolume = item[4] || 1;
+            if (!audio.fading) audio.volume = audio.mainVolume;
+            audio.currentTime = item[2] || 0;
+            if (item[6] && item[6] == -1) audio.nofade = true
+        }
+        audios.push(audio)
+    })
+    fxlist.forEach((act_) => {
+        Acts.push(functionForfx(act_))
+    })
+
+    function isPlaying(audio) {
+        return !audio.paused && !audio.ended && audio.currentTime > 0;
+    }
+    function fadeIn(audio) {
+        if (!audio.nofade) {
+            let t = 2;
+            const ctx = audio.ctx
+            let source = audio._source;
+            let gainNode = ctx.createGain();
+            source.connect(gainNode).connect(ctx.destination);
+            ctx.resume();
+            gainNode.gain.setValueAtTime(0, ctx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(audio.volume, ctx.currentTime + t);
+            if (audio.timeout) clearTimeout(audio.timeout)
+        }
+        audio.play();
+    }
+    function fadeOut(audio) {
+        if (!audio.nofade) {
+            let t = 2;
+            const ctx = audio.ctx
+            let source = audio._source;
+            let gainNode = ctx.createGain();
+            source.connect(gainNode).connect(ctx.destination);
+            gainNode.gain.setValueAtTime(audio.volume, ctx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + t);
+            if (audio.timeout) clearTimeout(audio.timeout)
+            setTimeout(() => {
+                audio.pause();
+                console.log("pausing this", audio)
+            }, t * 1000)
+        } else {
+            audio.pause()
+        }
+    }
+
+    let fxbtn = document.querySelector(".fx_btn")
+    let dec = document.querySelector(".dec")
+    let bbtn = document.querySelector(".back");
+    fxbtn.addEventListener("click", () => onclickhandle())
+    bbtn.addEventListener("click", () => {
+        if (Actindex > 0) {
+            Actindex -= 2;//to cancal out increase
+            onclickhandle(true)
+
+        }
+    })
+
+</script>
+
+</html>
